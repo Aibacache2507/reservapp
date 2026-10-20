@@ -13,7 +13,9 @@
     "test:stage4": "tsx scripts/verify-stage4.ts",
     "test:stage5": "tsx scripts/verify-stage5.ts",
     "test:stage6": "tsx scripts/verify-stage6.ts",
-    "test:stage7": "tsx scripts/verify-stage7.ts"
+    "test:stage7": "tsx scripts/verify-stage7.ts",
+    "test:stage8": "tsx scripts/verify-stage8.ts",
+    "test:all": "tsx scripts/verify-stage1.ts && tsx scripts/verify-stage2.ts && tsx scripts/verify-stage3.ts && tsx scripts/verify-stage4.ts && tsx scripts/verify-stage5.ts && tsx scripts/verify-stage6.ts && tsx scripts/verify-stage7.ts && tsx scripts/verify-stage8.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

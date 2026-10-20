@@ -11,6 +11,7 @@ import {
 } from "@/lib/utils/chile";
 import { formatChileanDate, formatChileanTime } from "@/lib/utils/dates";
 import { sendNotificationEmail } from "@/lib/notifications/email";
+import { checkRateLimit } from "@/lib/utils/rate-limit";
 import type { AvailableSlot } from "@/types/database";
 
 export interface BookingResult {
@@ -191,6 +192,14 @@ export async function createAppointmentBooking(
     };
   }
 
+  // Rate Limiting anti-spam por RUT (máximo 5 reservas en 60 segundos)
+  const rl = checkRateLimit(`booking_${rawRut}`, 5, 60);
+  if (!rl.allowed) {
+    return {
+      error: `Has realizado demasiados intentos en poco tiempo. Por favor espera ${rl.resetInSeconds} segundos antes de volver a intentar.`,
+    };
+  }
+
   // 3. Validación de teléfono chileno
   if (!isValidChileanPhone(phone)) {
     return {
@@ -365,6 +374,14 @@ export async function joinWaitlistAction(formData: FormData) {
 
   if (!validateRut(rawRut)) {
     return { error: "El RUT ingresado no es válido." };
+  }
+
+  // Rate Limiting lista de espera
+  const rlWaitlist = checkRateLimit(`waitlist_${rawRut}`, 4, 60);
+  if (!rlWaitlist.allowed) {
+    return {
+      error: `Has enviado varias solicitudes recientemente. Por favor espera ${rlWaitlist.resetInSeconds} segundos.`,
+    };
   }
 
   const formattedRut = formatRut(rawRut);
