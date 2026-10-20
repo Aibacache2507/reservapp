@@ -16,6 +16,10 @@ import {
   Tag,
   Hourglass,
   MessageSquare,
+  BarChart3,
+  DollarSign,
+  Package,
+  Star,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -119,26 +123,78 @@ export default async function AdminLayout({
                 className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-500" />
-                <span>Mensajes y Recordatorios</span>
+                <span>Mensajes y WhatsApp</span>
               </Link>
+
+              {!isAdmin && (
+                <Link
+                  href="/admin/commissions"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <DollarSign className="w-4 h-4 text-purple-500" />
+                  <span>Mis Comisiones</span>
+                </Link>
+              )}
             </div>
           </div>
 
-          {/* SECCIÓN GESTIÓN Y CONFIGURACIÓN (Solo Admin) */}
+          {/* SECCIÓN REPORTES Y GESTIÓN (Solo Admin) */}
           {isAdmin && (
             <div>
               <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">
-                Administración
+                Reportes y Negocio
               </p>
               <div className="space-y-1">
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <BarChart3 className="w-4 h-4 text-blue-600" />
+                  <span>Dashboard y Métricas</span>
+                </Link>
+
+                <Link
+                  href="/admin/commissions"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <DollarSign className="w-4 h-4 text-purple-600" />
+                  <span>Liquidación Comisiones</span>
+                </Link>
+
+                <Link
+                  href="/admin/inventory"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Package className="w-4 h-4 text-amber-600" />
+                  <span>Inventario y Stock</span>
+                </Link>
+
+                <Link
+                  href="/admin/loyalty"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Star className="w-4 h-4 text-pink-500" />
+                  <span>Fidelización y Reseñas</span>
+                </Link>
+
                 <Link
                   href="/admin/promotions"
                   className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
                 >
-                  <Tag className="w-4 h-4 text-purple-500" />
+                  <Tag className="w-4 h-4 text-emerald-600" />
                   <span>Cupones y Packs</span>
                 </Link>
+              </div>
+            </div>
+          )}
 
+          {/* SECCIÓN CONFIGURACIÓN (Solo Admin) */}
+          {isAdmin && (
+            <div>
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                Configuración
+              </p>
+              <div className="space-y-1">
                 <Link
                   href="/admin/settings"
                   className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
@@ -160,15 +216,7 @@ export default async function AdminLayout({
                   className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
                 >
                   <Users className="w-4 h-4 text-neutral-400" />
-                  <span className="text-xs">Equipo y Comisiones</span>
-                </Link>
-
-                <Link
-                  href="/admin/settings?tab=schedules"
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-                >
-                  <Clock className="w-4 h-4 text-neutral-400" />
-                  <span className="text-xs">Horarios y Descansos</span>
+                  <span className="text-xs">Equipo y Horarios</span>
                 </Link>
               </div>
             </div>

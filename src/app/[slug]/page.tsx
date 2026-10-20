@@ -52,7 +52,7 @@ export default async function PublicBusinessPage({ params }: PageProps) {
     supabase.from("service_variants").select("*").eq("business_id", business.id).eq("is_active", true).order("display_order"),
     supabase.from("professionals").select("*").eq("business_id", business.id).eq("is_active", true).order("display_order"),
     supabase.from("professional_services").select("*").eq("business_id", business.id).eq("is_active", true),
-    supabase.from("reviews").select("*").eq("business_id", business.id).eq("is_public", true).order("created_at", { ascending: false }).limit(6),
+    supabase.from("reviews").select("*, clients(name), professionals(name)").eq("business_id", business.id).eq("is_public", true).order("created_at", { ascending: false }).limit(6),
     supabase.from("gallery_images").select("*").eq("business_id", business.id).order("display_order").limit(8),
   ]);
 
@@ -184,6 +184,57 @@ export default async function PublicBusinessPage({ params }: PageProps) {
                   {img.caption && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <p className="text-[11px] text-white truncate">{img.caption}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Reseñas de Clientes */}
+        {reviewsList.length > 0 && (
+          <section className="space-y-4 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-400" />
+                <h3 className="text-lg font-bold">Opiniones de Clientes</h3>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                <span>{averageRating}</span>
+                <span className="text-amber-500">★</span>
+                <span className="text-neutral-400 font-normal">({reviewsList.length} reseñas)</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {reviewsList.map((rev: any) => (
+                <div
+                  key={rev.id}
+                  className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 space-y-2 text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-neutral-900 dark:text-neutral-100">
+                      {rev.clients?.name || "Cliente"}
+                    </span>
+                    <div className="flex text-amber-400">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`w-3 h-3 ${s <= rev.rating ? "fill-amber-400" : "text-neutral-300"}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {rev.comment && (
+                    <p className="text-neutral-600 dark:text-neutral-300 italic">
+                      "{rev.comment}"
+                    </p>
+                  )}
+                  {rev.business_reply && (
+                    <div className="pl-2.5 border-l-2 border-pink-500 text-[11px] text-pink-700 dark:text-pink-300 mt-2">
+                      <p className="font-semibold">Respuesta del local:</p>
+                      <p>{rev.business_reply}</p>
                     </div>
                   )}
                 </div>
