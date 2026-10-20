@@ -7,7 +7,10 @@ import {
   formatRut,
   normalizeChileanPhone,
   isValidChileanPhone,
+  formatCLP,
 } from "@/lib/utils/chile";
+import { formatChileanDate, formatChileanTime } from "@/lib/utils/dates";
+import { sendNotificationEmail } from "@/lib/notifications/email";
 import type { AvailableSlot } from "@/types/database";
 
 export interface BookingResult {
@@ -286,14 +289,42 @@ export async function createAppointmentBooking(
   }
 
   // Consultar nombres legibles para el resumen
-  const [{ data: prof }, { data: variant }] = await Promise.all([
+  const [{ data: prof }, { data: variant }, { data: biz }] = await Promise.all([
     supabase.from("professionals").select("name").eq("id", professionalId).single(),
     supabase.from("service_variants").select("name, services(name)").eq("id", serviceVariantId).single(),
+    supabase.from("businesses").select("name, brand_color, address").eq("id", businessId).single(),
   ]);
 
   const serviceName = (variant as any)?.services?.name
     ? `${(variant as any).services.name} (${(variant as any).name})`
     : (variant as any)?.name || "Servicio";
+
+  // Disparar correo de confirmación automático (Resend)
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const manageUrl = `${appUrl}/reserva/${appointment.cancel_token}`;
+
+    await sendNotificationEmail({
+      businessId,
+      appointmentId: appointment.id,
+      triggerEvent: "confirmation",
+      recipientEmail: email,
+      brandColor: (biz as any)?.brand_color || "#ec4899",
+      variables: {
+        nombre: fullName,
+        servicio: serviceName,
+        profesional: (prof as any)?.name || "Profesional",
+        fecha: formatChileanDate(appointment.starts_at),
+        hora: formatChileanTime(appointment.starts_at),
+        direccion: (biz as any)?.address || "Dirección del local",
+        enlace_gestion: manageUrl,
+        negocio: (biz as any)?.name || "RESERVAPP",
+        precio: formatCLP(appointment.total_price_clp),
+      },
+    });
+  } catch (emailErr) {
+    console.error("No se pudo enviar correo de confirmación:", emailErr);
+  }
 
   return {
     success: true,

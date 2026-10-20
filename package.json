@@ -10,7 +10,8 @@
     "test:stage1": "tsx scripts/verify-stage1.ts",
     "test:stage2": "tsx scripts/verify-stage2.ts",
     "test:stage3": "tsx scripts/verify-stage3.ts",
-    "test:stage4": "tsx scripts/verify-stage4.ts"
+    "test:stage4": "tsx scripts/verify-stage4.ts",
+    "test:stage5": "tsx scripts/verify-stage5.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -22,6 +23,7 @@
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "resend": "^6.34.1",
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"
   },

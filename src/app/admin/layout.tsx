@@ -15,6 +15,7 @@ import {
   Shield,
   Tag,
   Hourglass,
+  MessageSquare,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -111,6 +112,14 @@ export default async function AdminLayout({
               >
                 <Users className="w-4 h-4 text-blue-500" />
                 <span>{isAdmin ? "Clientes y Fichas" : "Mis Clientes"}</span>
+              </Link>
+
+              <Link
+                href="/admin/notifications"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <span>Mensajes y Recordatorios</span>
               </Link>
             </div>
           </div>

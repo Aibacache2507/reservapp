@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { sendNotificationEmail } from "@/lib/notifications/email";
+import { formatChileanDate, formatChileanTime } from "@/lib/utils/dates";
 
 export interface CancelResult {
   success?: boolean;
@@ -23,7 +25,15 @@ export async function cancelAppointmentByToken(
   // 1. Obtener la cita y las reglas del negocio
   const { data: apt }: any = await supabase
     .from("appointments")
-    .select("id, starts_at, status, business_id, businesses(booking_rules, name, phone)")
+    .select(`
+      id,
+      starts_at,
+      status,
+      business_id,
+      clients (name, email),
+      services (name),
+      businesses (booking_rules, name, phone, brand_color, address)
+    `)
     .eq("cancel_token", token)
     .maybeSingle();
 
@@ -68,6 +78,29 @@ export async function cancelAppointmentByToken(
     return { error: error.message || "Error al cancelar la cita." };
   }
 
+  // Disparar correo de cancelación (Resend)
+  try {
+    if (apt.clients?.email) {
+      await sendNotificationEmail({
+        businessId: apt.business_id,
+        appointmentId: apt.id,
+        triggerEvent: "cancelled",
+        recipientEmail: apt.clients.email,
+        brandColor: apt.businesses?.brand_color || "#ec4899",
+        variables: {
+          nombre: apt.clients.name || "Cliente",
+          servicio: apt.services?.name || "Servicio",
+          fecha: formatChileanDate(apt.starts_at),
+          hora: formatChileanTime(apt.starts_at),
+          negocio: apt.businesses?.name || "RESERVAPP",
+          direccion: apt.businesses?.address || "",
+        },
+      });
+    }
+  } catch (emailErr) {
+    console.error("Error al enviar correo de cancelación:", emailErr);
+  }
+
   revalidatePath(`/reserva/${token}`);
   return {
     success: true,
@@ -92,7 +125,16 @@ export async function rescheduleAppointmentByToken(
 
   const { data: apt }: any = await supabase
     .from("appointments")
-    .select("id, starts_at, status, reschedule_count, businesses(booking_rules)")
+    .select(`
+      id,
+      starts_at,
+      status,
+      reschedule_count,
+      business_id,
+      clients (name, email),
+      services (name),
+      businesses (booking_rules, name, brand_color, address)
+    `)
     .eq("cancel_token", token)
     .maybeSingle();
 
@@ -140,9 +182,43 @@ export async function rescheduleAppointmentByToken(
     return { error: error.message };
   }
 
+  // Disparar correo de reprogramación (Resend)
+  try {
+    if (apt.clients?.email) {
+      const { data: prof }: any = await supabase
+        .from("professionals")
+        .select("name")
+        .eq("id", newProfessionalId)
+        .single();
+
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const manageUrl = `${appUrl}/reserva/${token}`;
+
+      await sendNotificationEmail({
+        businessId: apt.business_id,
+        appointmentId: apt.id,
+        triggerEvent: "rescheduled",
+        recipientEmail: apt.clients.email,
+        brandColor: apt.businesses?.brand_color || "#ec4899",
+        variables: {
+          nombre: apt.clients.name || "Cliente",
+          servicio: apt.services?.name || "Servicio",
+          profesional: prof?.name || "Especialista",
+          fecha: formatChileanDate(newStartsAt),
+          hora: formatChileanTime(newStartsAt),
+          negocio: apt.businesses?.name || "RESERVAPP",
+          direccion: apt.businesses?.address || "",
+          enlace_gestion: manageUrl,
+        },
+      });
+    }
+  } catch (emailErr) {
+    console.error("Error al enviar correo de reprogramación:", emailErr);
+  }
+
   revalidatePath(`/reserva/${token}`);
   return {
     success: true,
-    message: "¡Tu cita ha sido reprogramada con éxito!",
+    message: "Tu cita ha sido reprogramada exitosamente.",
   };
 }
