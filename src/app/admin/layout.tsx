@@ -13,6 +13,8 @@ import {
   Scissors,
   Clock,
   Shield,
+  Tag,
+  Hourglass,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -46,6 +48,7 @@ export default async function AdminLayout({
 
   const business = member.businesses as any;
   const isSuperadmin = user.user_metadata?.is_superadmin || false;
+  const isAdmin = member.role === "business_admin";
 
   return (
     <div className="min-h-screen flex bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
@@ -53,7 +56,7 @@ export default async function AdminLayout({
       <aside className="w-64 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex flex-col shrink-0">
         {/* Brand / Logo */}
         <div className="p-5 border-b border-neutral-200 dark:border-neutral-800">
-          <Link href="/admin/settings" className="flex items-center gap-2.5">
+          <Link href="/admin/calendar" className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm"
               style={{ backgroundColor: business.brand_color || "#ec4899" }}
@@ -69,7 +72,7 @@ export default async function AdminLayout({
                   {business.plan?.toUpperCase() || "PRO"}
                 </Badge>
                 <span className="text-[11px] text-neutral-400 capitalize">
-                  {member.role === "business_admin" ? "Administrador" : "Profesional"}
+                  {isAdmin ? "Administrador" : "Profesional"}
                 </span>
               </div>
             </div>
@@ -77,59 +80,108 @@ export default async function AdminLayout({
         </div>
 
         {/* Links de Navegación */}
-        <nav className="flex-1 p-3 space-y-1 text-sm font-medium">
-          <Link
-            href="/admin/settings"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-          >
-            <Settings className="w-4 h-4 text-pink-600" />
-            <span>Configuración del Local</span>
-          </Link>
+        <nav className="flex-1 p-3 space-y-4 text-sm font-medium overflow-y-auto">
+          {/* SECCIÓN OPERACIÓN */}
+          <div>
+            <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+              Operación
+            </p>
+            <div className="space-y-1">
+              <Link
+                href="/admin/calendar"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+              >
+                <Calendar className="w-4 h-4 text-pink-600" />
+                <span>{isAdmin ? "Agenda Operativa" : "Mi Agenda"}</span>
+              </Link>
 
-          <Link
-            href="/admin/settings?tab=services"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-          >
-            <Scissors className="w-4 h-4 text-neutral-500" />
-            <span>Servicios y Precios</span>
-          </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin/waitlist"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Hourglass className="w-4 h-4 text-amber-500" />
+                  <span>Lista de Espera</span>
+                </Link>
+              )}
 
-          <Link
-            href="/admin/settings?tab=team"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-          >
-            <Users className="w-4 h-4 text-neutral-500" />
-            <span>Equipo y Profesionales</span>
-          </Link>
+              <Link
+                href="/admin/clients"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+              >
+                <Users className="w-4 h-4 text-blue-500" />
+                <span>{isAdmin ? "Clientes y Fichas" : "Mis Clientes"}</span>
+              </Link>
+            </div>
+          </div>
 
-          <Link
-            href="/admin/settings?tab=schedules"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-          >
-            <Clock className="w-4 h-4 text-neutral-500" />
-            <span>Horarios y Descansos</span>
-          </Link>
+          {/* SECCIÓN GESTIÓN Y CONFIGURACIÓN (Solo Admin) */}
+          {isAdmin && (
+            <div>
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 mb-1">
+                Administración
+              </p>
+              <div className="space-y-1">
+                <Link
+                  href="/admin/promotions"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Tag className="w-4 h-4 text-purple-500" />
+                  <span>Cupones y Packs</span>
+                </Link>
 
-          <Link
-            href="/admin/settings?tab=rules"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
-          >
-            <Calendar className="w-4 h-4 text-neutral-500" />
-            <span>Reglas de Agendamiento</span>
-          </Link>
+                <Link
+                  href="/admin/settings"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Settings className="w-4 h-4 text-neutral-500" />
+                  <span>Configuración General</span>
+                </Link>
+
+                <Link
+                  href="/admin/settings?tab=services"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Scissors className="w-4 h-4 text-neutral-400" />
+                  <span className="text-xs">Servicios y Precios</span>
+                </Link>
+
+                <Link
+                  href="/admin/settings?tab=team"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Users className="w-4 h-4 text-neutral-400" />
+                  <span className="text-xs">Equipo y Comisiones</span>
+                </Link>
+
+                <Link
+                  href="/admin/settings?tab=schedules"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Clock className="w-4 h-4 text-neutral-400" />
+                  <span className="text-xs">Horarios y Descansos</span>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {isSuperadmin && (
-            <Link
-              href="/superadmin"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors"
-            >
-              <Shield className="w-4 h-4" />
-              <span>Panel Superadmin</span>
-            </Link>
+            <div>
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-500 mb-1">
+                Plataforma
+              </p>
+              <Link
+                href="/superadmin"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-colors"
+              >
+                <Shield className="w-4 h-4" />
+                <span>Superadmin SaaS</span>
+              </Link>
+            </div>
           )}
 
           {/* Enlace a la página pública del negocio */}
-          <div className="pt-4 mt-4 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="pt-2">
             <Link
               href={`/${business.slug}`}
               target="_blank"
