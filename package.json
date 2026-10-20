@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:stage1": "tsx scripts/verify-stage1.ts"
+    "test:stage1": "tsx scripts/verify-stage1.ts",
+    "test:stage2": "tsx scripts/verify-stage2.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
