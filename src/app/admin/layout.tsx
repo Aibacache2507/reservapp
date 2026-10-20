@@ -20,6 +20,7 @@ import {
   DollarSign,
   Package,
   Star,
+  Camera,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -175,6 +176,14 @@ export default async function AdminLayout({
                 >
                   <Star className="w-4 h-4 text-pink-500" />
                   <span>Fidelización y Reseñas</span>
+                </Link>
+
+                <Link
+                  href="/admin/gallery"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 transition-colors"
+                >
+                  <Camera className="w-4 h-4 text-rose-500" />
+                  <span>Galería y Portfolio</span>
                 </Link>
 
                 <Link

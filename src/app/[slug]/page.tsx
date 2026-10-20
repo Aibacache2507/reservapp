@@ -74,8 +74,52 @@ export default async function PublicBusinessPage({ params }: PageProps) {
         ).toFixed(1)
       : "5.0";
 
+  // Datos estructurados Schema.org para SEO Local
+  const schemaJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BeautySalon",
+    name: business.name,
+    description: business.description || `Servicios de belleza y agendamiento online en ${business.name}`,
+    url: `https://reservapp.cl/${business.slug}`,
+    telephone: business.phone || "+56912345678",
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: business.address || "Santiago",
+      addressLocality: business.city || "Santiago",
+      addressRegion: "Región Metropolitana",
+      addressCountry: "CL",
+    },
+    ...(reviewsList.length > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: averageRating,
+        reviewCount: reviewsList.length,
+        bestRating: "5",
+        worstRating: "1",
+      },
+      review: reviewsList.map((r: any) => ({
+        "@type": "Review",
+        author: {
+          "@type": "Person",
+          name: r.clients?.name || "Cliente",
+        },
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: r.rating || 5,
+        },
+        reviewBody: r.comment || "",
+      })),
+    }),
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+      {/* Datos Estructurados SEO Local */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaJsonLd) }}
+      />
       {/* Header / Hero del Negocio */}
       <header
         className="relative py-12 px-4 sm:px-6 lg:px-8 border-b border-neutral-200 dark:border-neutral-800"

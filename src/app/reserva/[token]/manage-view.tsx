@@ -23,6 +23,7 @@ import {
   CheckCircle2,
   XCircle,
   Sparkles,
+  Star,
   ArrowRight,
 } from "lucide-react";
 
@@ -204,6 +205,25 @@ export function ManageView({
             {isCancelled && appointment.cancel_reason && (
               <div className="p-3.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-xs text-neutral-600 dark:text-neutral-300">
                 <strong>Motivo de cancelación:</strong> {appointment.cancel_reason}
+              </div>
+            )}
+
+            {/* Cita completada: Invitar a dejar reseña */}
+            {isCompleted && (
+              <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 text-center space-y-2.5">
+                <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                  ⭐ ¡Gracias por atenderte con nosotros!
+                </p>
+                <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                  ¿Cómo estuvo tu experiencia? Déjanos una breve calificación.
+                </p>
+                <Link
+                  href={`/reserva/${appointment.cancel_token}/review`}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors shadow-xs"
+                >
+                  <Star className="w-3.5 h-3.5 fill-white" />
+                  <span>Dejar mi Calificación</span>
+                </Link>
               </div>
             )}
 
